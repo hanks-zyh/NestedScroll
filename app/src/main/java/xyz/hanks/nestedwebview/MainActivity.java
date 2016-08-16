@@ -19,7 +19,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
-        setContentView(R.layout.activity_main_nest);
+//        setContentView(R.layout.activity_main_nest);
+        setContentView(R.layout.activity_main_scroll);
         // Let's display the progress in the activity title bar, like the
         // browser app does.
         webView = (WebView) findViewById(R.id.webview);
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            ((TextView) holder.itemView).setText(position + ". this is a simple item");
+            ((TextView) holder.itemView).setText(position + ". this is getDirection simple item");
         }
 
         @Override

@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
-<xyz.hanks.nestedwebview.hscroll.NestedLinearLayout
+<xyz.hanks.nestedwebview.jianshuScroll.EmbeddedScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -8,45 +16,50 @@
     <xyz.hanks.nestedwebview.hscroll.NestedWeb
         android:id="@+id/webview"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:scrollbarSize="5dp"
         android:scrollbarStyle="insideInset"
-        android:scrollbars="vertical"/>
+        android:scrollbars="vertical"
+        android:scrollbarSize="5dp"
+        android:layout_height="match_parent"/>
 
     <android.support.v4.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="#e1e1e1"
-        android:orientation="vertical"
-        android:scrollbarStyle="insideInset">
-        <LinearLayout
+
+        android:scrollbarStyle="insideInset"
+        android:orientation="vertical">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#e1e1e1"
+        android:orientation="vertical">
+
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#e1e1e1"
-            android:orientation="vertical">
+            android:layout_height="100dp"
+            android:text="click"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="click"/>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:text="click"/>
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="click"/>
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="click"/>
-        </LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:text="click"/>
+    </LinearLayout>
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerView"
+
+        android:scrollbarStyle="insideInset"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
         android:background="#2f00"
-        android:scrollbarStyle="insideInset">
+        android:layout_height="800dp"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
     </android.support.v7.widget.RecyclerView>
-</xyz.hanks.nestedwebview.hscroll.NestedLinearLayout>
+</LinearLayout>
+</xyz.hanks.nestedwebview.jianshuScroll.EmbeddedScrollView>

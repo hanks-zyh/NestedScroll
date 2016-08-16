@@ -21,6 +21,7 @@ import android.widget.OverScroller;
  */
 public class NestedLinearLayout extends ViewGroup implements NestedScrollingParent {
     private static final int INVALID_POINTER = -1;
+    private static final String TAG = "xxxxxxx";
     private final NestedScrollingParentHelper mNestedScrollingParentHelper;
     private final OverScroller mScroller;
     private final int mTouchSlop;
@@ -34,6 +35,7 @@ public class NestedLinearLayout extends ViewGroup implements NestedScrollingPare
     private int[] mScrollOffset;
 
     ScrollerCompat scrollerCompat;
+    private int currentSwapLine;
 
     public NestedLinearLayout(Context context) {
         this(context, null);
@@ -104,7 +106,6 @@ public class NestedLinearLayout extends ViewGroup implements NestedScrollingPare
         boolean consume = !canScrollDown && !canScrollUp;
         if (target instanceof RecyclerView) {
             if (dy > 0) {
-
                 consume = getScrollY() > 0 && getScrollY() < getChildAt(0).getMeasuredHeight() + getChildAt(1).getMeasuredHeight();
             } else {
                 consume = !canChildScrollUp(target);
@@ -130,70 +131,62 @@ public class NestedLinearLayout extends ViewGroup implements NestedScrollingPare
 
     @Override
     public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
-        super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
+        this.scrollBy(dxUnconsumed, dyUnconsumed);
     }
 
-    @Override
-    public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
+    public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
+        Log.i(TAG, "onNestedFling : velocityY = " + velocityY + " " + consumed);
+        if (!consumed) {
+            fling((int) velocityY);
+            return true;
+        }
         return false;
     }
 
+    public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
+//        Log.i(TAG, "onNestedPreFling :  direction = " + this.direction + " currentSwapLine = " + this.currentSwapLine + " velocityY = " + velocityY + " scrollY = " + getScrollY());
 
-    @Override
-    public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
-        if (!consumed) {
-            return false;
-        }
-        scrollerCompat.fling(0, 0, 0, (int) velocityY, 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
-        ViewCompat.postInvalidateOnAnimation(this);
+        fling((int) velocityY);
         return true;
     }
 
+    /**
+     * Fling the scroll view
+     *
+     * @param velocityY The initial velocity in the Y direction. Positive
+     *                  numbers mean that the finger/cursor is moving down the screen,
+     *                  which means we want to scroll towards the top.
+     */
+    public void fling(int velocityY) {
+        if (getChildCount() > 0) {
+            int height = getHeight();
+            int bottom = getChildAt(0).getHeight();
+            mScroller.fling(getScrollX(), getScrollY(), 0, velocityY, 0, 0, 0,
+                    Math.max(0, bottom - height), 0, height/2);
+            ViewCompat.postInvalidateOnAnimation(this);
+        }
+    }
 
     @Override
     public void computeScroll() {
         if (mScroller.computeScrollOffset()) {
-            int oldX = getScrollX();
-            int oldY = getScrollY();
-            int x = mScroller.getCurrX();
-            int y = mScroller.getCurrY();
 
-            if (oldX != x || oldY != y) {
-                int dy = adjustScrollY(y - oldY);
-                if (dy != 0) {
-                    scrollBy(x - oldX, dy);
-                    onScrollChanged(getScrollX(), getScrollY(), oldX, oldY);
-                } else {
-                    mScroller.forceFinished(true);
-                }
-            }
 
             if (!awakenScrollBars()) {
+                // Keep on drawing until the animation has finished.
                 ViewCompat.postInvalidateOnAnimation(this);
             }
-
         }
-        super.computeScroll();
     }
 
-    private int adjustScrollY(int delta) {
-        int dy = 0;
-        int distance = Math.abs(delta);
-        if (delta > 0) { // Scroll To Bottom
-            View second = getChildAt(1);
-            if (second != null) {
-                int max = second.getTop() - getScrollY(); // 最多滚动到第二个View的顶部和Container顶部对齐
-                max = Math.min(max, second.getBottom() - getScrollY() - getBottom()); // 最多滚动到第二个View的底部和Container对齐
-                dy = Math.min(max, distance);
-            }
-        } else if (delta < 0) { // Scroll To Top
-            dy = -Math.min(distance, getScrollY());
-        }
-        return dy;
+    @Override
+    public void onStopNestedScroll(View child) {
+        mNestedScrollingParentHelper.onStopNestedScroll(child);
     }
+
     /**
      * @return Whether it is possible for the child view of this layout to
-     * scroll up. Override this if the child view is a custom view.
+     * scroll up. Override this if the child view is getDirection custom view.
      */
     public boolean canChildScrollUp(View view) {
         if (android.os.Build.VERSION.SDK_INT < 14) {

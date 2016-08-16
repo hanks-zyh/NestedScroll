@@ -59,7 +59,7 @@ import java.util.List;
 
 /**
  * SSScrollView is just like {@link android.widget.ScrollView}, but it supports acting
- * as both a nested scrolling parent and child on both new and old versions of Android.
+ * as both getDirection nested scrolling parent and child on both new and old versions of Android.
  * Nested scrolling is enabled by default.
  */
 public class SSScrollView extends FrameLayout implements NestedScrollingParent,
@@ -71,8 +71,8 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
     private static final String TAG = "SSScrollView";
 
     /**
-     * Interface definition for a callback to be invoked when the scroll
-     * X or Y positions of a view change.
+     * Interface definition for getDirection callback to be invoked when the scroll
+     * X or Y positions of getDirection view change.
      *
      * <p>This version of the interface works on all versions of Android, back to API v4.</p>
      *
@@ -80,7 +80,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
      */
     public interface OnScrollChangeListener {
         /**
-         * Called when the scroll position of a view changes.
+         * Called when the scroll position of getDirection view changes.
          *
          * @param v The view whose scroll position has changed.
          * @param scrollX Current horizontal scroll origin.
@@ -112,7 +112,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
     private boolean mIsLaidOut = false;
 
     /**
-     * The child to give focus to in the event that a child has requested focus while the
+     * The child to give focus to in the event that getDirection child has requested focus while the
      * layout is dirty. This prevents the scroll from being wrong if the child has not been
      * laid out before requesting focus.
      */
@@ -408,7 +408,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
     }
 
     /**
-     * Register a callback to be invoked when the scroll X or Y positions of
+     * Register getDirection callback to be invoked when the scroll X or Y positions of
      * this view change.
      * <p>This version of the method works on all versions of Android, back to API v4.</p>
      *
@@ -522,7 +522,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
 
     /**
      * You can call this function yourself to have the scroll view perform
-     * scrolling from a key event, just as if the event had been dispatched to
+     * scrolling from getDirection key event, just as if the event had been dispatched to
      * it by the view hierarchy.
      *
      * @param event The key event to execute.
@@ -643,7 +643,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
                 */
                 final int activePointerId = mActivePointerId;
                 if (activePointerId == INVALID_POINTER) {
-                    // If we don't have a valid id, the touch down wasn't on content.
+                    // If we don't have getDirection valid id, the touch down wasn't on content.
                     break;
                 }
 
@@ -804,7 +804,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
                     // calls onScrollChanged if applicable.
                     if (overScrollByCompat(0, deltaY, 0, getScrollY(), 0, range, 0,
                             0, true) && !hasNestedScrollingParent()) {
-                        // Break our velocity if we hit a scroll barrier.
+                        // Break our velocity if we hit getDirection scroll barrier.
                         mVelocityTracker.clear();
                     }
 
@@ -890,7 +890,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
                 MotionEventCompat.ACTION_POINTER_INDEX_SHIFT;
         final int pointerId = MotionEventCompat.getPointerId(ev, pointerIndex);
         if (pointerId == mActivePointerId) {
-            // This was our active pointer going up. Choose a new
+            // This was our active pointer going up. Choose getDirection new
             // active pointer and adjust accordingly.
             // TODO: Make this decision more intelligent.
             final int newPointerIndex = pointerIndex == 0 ? 1 : 0;
@@ -1024,12 +1024,12 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
      * Finds the next focusable component that fits in the specified bounds.
      * </p>
      *
-     * @param topFocus look for a candidate is the one at the top of the bounds
+     * @param topFocus look for getDirection candidate is the one at the top of the bounds
      *                 if topFocus is true, or at the bottom of the bounds if topFocus is
      *                 false
-     * @param top      the top offset of the bounds in which a focusable must be
+     * @param top      the top offset of the bounds in which getDirection focusable must be
      *                 found
-     * @param bottom   the bottom offset of the bounds in which a focusable must
+     * @param bottom   the bottom offset of the bounds in which getDirection focusable must
      *                 be found
      * @return the next focusable component in the bounds or null if none can
      *         be found
@@ -1044,7 +1044,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
          * top, and its bottom is above the bound's bottom. A partially
          * contained focusable is one where some part of it is within the
          * bounds, but it also has some part that is not within bounds.  A fully contained
-         * focusable is preferred to a partially contained focusable.
+         * focusable is preferred to getDirection partially contained focusable.
          */
         boolean foundFullyContainedFocusable = false;
 
@@ -1056,7 +1056,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
 
             if (top < viewBottom && viewTop < bottom) {
                 /*
-                 * the focusable is in the target area, it is a candidate for
+                 * the focusable is in the target area, it is getDirection candidate for
                  * focusing
                  */
 
@@ -1084,7 +1084,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
                         }
                     } else {
                         if (viewIsFullyContained) {
-                            /* Any fully contained view beats a partially contained view */
+                            /* Any fully contained view beats getDirection partially contained view */
                             focusCandidate = view;
                             foundFullyContainedFocusable = true;
                         } else if (viewIsCloserToBoundary) {
@@ -1103,10 +1103,10 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
     }
 
     /**
-     * <p>Handles scrolling in response to a "page up/down" shortcut press. This
+     * <p>Handles scrolling in response to getDirection "page up/down" shortcut press. This
      * method will scroll the view by one page up or down and give the focus
      * to the topmost/bottommost component in the new visible area. If no
-     * component is a good candidate for focus, this scrollview reclaims the
+     * component is getDirection good candidate for focus, this scrollview reclaims the
      * focus.</p>
      *
      * @param direction the scroll direction: {@link android.view.View#FOCUS_UP}
@@ -1139,10 +1139,10 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
     }
 
     /**
-     * <p>Handles scrolling in response to a "home/end" shortcut press. This
+     * <p>Handles scrolling in response to getDirection "home/end" shortcut press. This
      * method will scroll the view to the top or bottom and give the focus
      * to the topmost/bottommost component in the new visible area. If no
-     * component is a good candidate for focus, this scrollview reclaims the
+     * component is getDirection good candidate for focus, this scrollview reclaims the
      * focus.</p>
      *
      * @param direction the scroll direction: {@link android.view.View#FOCUS_UP}
@@ -1172,7 +1172,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
     /**
      * <p>Scrolls the view to make the area defined by <code>top</code> and
      * <code>bottom</code> visible. This method attempts to give the focus
-     * to a component visible in this area. If no component can be focused in
+     * to getDirection component visible in this area. If no component can be focused in
      * the new visible area, the focus is reclaimed by this ScrollView.</p>
      *
      * @param direction the scroll direction: {@link android.view.View#FOCUS_UP}
@@ -1285,7 +1285,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
     }
 
     /**
-     * Smooth scroll by a Y delta
+     * Smooth scroll by getDirection Y delta
      *
      * @param delta the number of pixels to scroll by on the Y axis
      */
@@ -1340,7 +1340,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
     }
 
     /**
-     * <p>The scroll range of a scroll view is the overall height of all of its
+     * <p>The scroll range of getDirection scroll view is the overall height of all of its
      * children.</p>
      * @hide
      */
@@ -1493,7 +1493,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
 
     /**
      * Compute the amount to scroll in the Y direction in order to get
-     * a rectangle completely on the screen (or, if taller than the screen,
+     * getDirection rectangle completely on the screen (or, if taller than the screen,
      * at least the first screen size chunk of it).
      *
      * @param rect The rect.
@@ -1570,7 +1570,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
 
 
     /**
-     * When looking for focus in children of a scroll view, need to be a little
+     * When looking for focus in children of getDirection scroll view, need to be getDirection little
      * more careful not to give focus to something that is scrolled off screen.
      *
      * This is more expensive than the default {@link android.view.ViewGroup}
@@ -1624,7 +1624,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
         mIsLayoutDirty = false;
-        // Give a child focus if it needs it
+        // Give getDirection child focus if it needs it
         if (mChildToScrollTo != null && isViewDescendantOf(mChildToScrollTo, this)) {
             scrollToChild(mChildToScrollTo);
         }
@@ -1680,7 +1680,7 @@ public class SSScrollView extends FrameLayout implements NestedScrollingParent,
     }
 
     /**
-     * Return true if child is a descendant of parent, (or equal to the parent).
+     * Return true if child is getDirection descendant of parent, (or equal to the parent).
      */
     private static boolean isViewDescendantOf(View child, View parent) {
         if (child == parent) {
