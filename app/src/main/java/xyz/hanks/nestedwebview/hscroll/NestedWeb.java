@@ -6,7 +6,6 @@ import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingChildHelper;
 import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.webkit.WebView;
 import android.widget.OverScroller;
@@ -78,16 +77,15 @@ public class NestedWeb extends WebView implements NestedScrollingChild {
         return mChildHelper.dispatchNestedPreFling(velocityX, velocityY);
     }
 
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
         final int action = MotionEventCompat.getActionMasked(event);
         int y = (int) event.getY();
         switch (action) {
             case MotionEvent.ACTION_DOWN:
                 mLastY = y;
                 mNestedOffsetY = 0;
+                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 break;
             case MotionEvent.ACTION_MOVE:
                 int dy = mLastY - y;
@@ -114,10 +112,4 @@ public class NestedWeb extends WebView implements NestedScrollingChild {
         return super.onTouchEvent(event);
     }
 
-    @Override
-    protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
-        Log.e("xxxxx","onOverScrolled"+scrollX+","+scrollY+","+clampedY+","+clampedY);
-        scrollTo(scrollX,scrollY);
-        super.onOverScrolled(scrollX, scrollY, clampedX, clampedY);
-    }
 }

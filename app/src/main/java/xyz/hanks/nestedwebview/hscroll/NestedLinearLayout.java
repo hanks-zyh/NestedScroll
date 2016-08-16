@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.v4.view.NestedScrollingParent;
 import android.support.v4.view.NestedScrollingParentHelper;
 import android.support.v4.view.ViewCompat;
+import android.support.v4.widget.ScrollerCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -32,6 +33,8 @@ public class NestedLinearLayout extends ViewGroup implements NestedScrollingPare
     private int mActivePointerId;
     private int[] mScrollOffset;
 
+    ScrollerCompat scrollerCompat;
+
     public NestedLinearLayout(Context context) {
         this(context, null);
     }
@@ -45,6 +48,7 @@ public class NestedLinearLayout extends ViewGroup implements NestedScrollingPare
         // 通过 NestedScrolling 机制来处理嵌套滚动
         mNestedScrollingParentHelper = new NestedScrollingParentHelper(this);
         mScroller = new OverScroller(context);
+        scrollerCompat = ScrollerCompat.create(context);
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
         mMaximumVelocity = ViewConfiguration.get(context)
                 .getScaledMaximumFlingVelocity();
@@ -129,6 +133,64 @@ public class NestedLinearLayout extends ViewGroup implements NestedScrollingPare
         super.onNestedScroll(target, dxConsumed, dyConsumed, dxUnconsumed, dyUnconsumed);
     }
 
+    @Override
+    public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
+        return false;
+    }
+
+
+    @Override
+    public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
+        if (!consumed) {
+            return false;
+        }
+        scrollerCompat.fling(0, 0, 0, (int) velocityY, 0, 0, Integer.MIN_VALUE, Integer.MAX_VALUE);
+        ViewCompat.postInvalidateOnAnimation(this);
+        return true;
+    }
+
+
+    @Override
+    public void computeScroll() {
+        if (mScroller.computeScrollOffset()) {
+            int oldX = getScrollX();
+            int oldY = getScrollY();
+            int x = mScroller.getCurrX();
+            int y = mScroller.getCurrY();
+
+            if (oldX != x || oldY != y) {
+                int dy = adjustScrollY(y - oldY);
+                if (dy != 0) {
+                    scrollBy(x - oldX, dy);
+                    onScrollChanged(getScrollX(), getScrollY(), oldX, oldY);
+                } else {
+                    mScroller.forceFinished(true);
+                }
+            }
+
+            if (!awakenScrollBars()) {
+                ViewCompat.postInvalidateOnAnimation(this);
+            }
+
+        }
+        super.computeScroll();
+    }
+
+    private int adjustScrollY(int delta) {
+        int dy = 0;
+        int distance = Math.abs(delta);
+        if (delta > 0) { // Scroll To Bottom
+            View second = getChildAt(1);
+            if (second != null) {
+                int max = second.getTop() - getScrollY(); // 最多滚动到第二个View的顶部和Container顶部对齐
+                max = Math.min(max, second.getBottom() - getScrollY() - getBottom()); // 最多滚动到第二个View的底部和Container对齐
+                dy = Math.min(max, distance);
+            }
+        } else if (delta < 0) { // Scroll To Top
+            dy = -Math.min(distance, getScrollY());
+        }
+        return dy;
+    }
     /**
      * @return Whether it is possible for the child view of this layout to
      * scroll up. Override this if the child view is a custom view.
@@ -146,14 +208,6 @@ public class NestedLinearLayout extends ViewGroup implements NestedScrollingPare
             }
         } else {
             return ViewCompat.canScrollVertically(view, -1);
-        }
-    }
-
-    @Override
-    public void computeScroll() {
-        if (mScroller.computeScrollOffset()) {
-            scrollTo(0, mScroller.getCurrY());
-            invalidate();
         }
     }
 
