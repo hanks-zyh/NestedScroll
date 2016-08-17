@@ -563,8 +563,3 @@ public class GoldWebView extends WebView implements NestedScrollingChild {
         }
     }
 }
-
-/* Location:           /Users/likang/Desktop/classes_dex2jar.jar
- * Qualified Name:     com.baiji.jianshu.widget.EmbeddedWebView
- * JD-Core Version:    0.6.2
- */

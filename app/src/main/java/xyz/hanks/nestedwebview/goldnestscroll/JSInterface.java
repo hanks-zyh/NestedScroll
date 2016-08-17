@@ -12,6 +12,5 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({java.lang.annotation.ElementType.METHOD})
-public @interface JSInterface
-{
+public @interface JSInterface {
 }

@@ -305,8 +305,3 @@ public class GoldScrollView extends ScrollView
         return super.onTouchEvent(paramMotionEvent);
     }
 }
-
-/* Location:           /Users/likang/Desktop/classes_dex2jar.jar
- * Qualified Name:     com.baiji.jianshu.widget.EmbeddedScrollView
- * JD-Core Version:    0.6.2
- */
