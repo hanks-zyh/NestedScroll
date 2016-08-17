@@ -1,11 +1,14 @@
 package xyz.hanks.nestedwebview;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
@@ -34,9 +37,36 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setDisplayZoomControls(false);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setAppCacheEnabled(true);
+        webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+        webView.getSettings().setDatabaseEnabled(true);
+        webView.getSettings().setDatabasePath("/data/data/com.daimajia.gold/databases/");
+        webView.getSettings().setDomStorageEnabled(true);
+        //网址添加 https 后，显示 http 图片,KITKAT 及以下版本默认为 MIXED_CONTENT_ALWAYS_ALLOW
+        //see http://developer.android.com/intl/zh-cn/reference/android/webkit/WebSettings.html#setMixedContentMode(int)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+
+        if (Build.VERSION.SDK_INT >= 19) {
+            // chromium, enable hardware acceleration
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            // older android version, disable hardware acceleration
+            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+
+        webView.setScrollContainer(false);
+
+        webView.loadUrl("http://gold.xitu.io/post/57b074fda633bd0057035b6d");
 //        webView.loadUrl("http://blog.csdn.net/hpu_zyh/article/details/52116512");
-        webView.loadUrl("http://www.jianshu.com/p/7cfb42b3749b");
-//        webView.loadUrl("http://gold.xitu.io/post/57b074fda633bd0057035b6d");
+//        webView.loadUrl("http://www.jianshu.com/p/7cfb42b3749b");
+
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));

@@ -380,7 +380,7 @@ public class EmbeddedWebView extends WebView implements NestedScrollingChild {
                 MotionEventCompat.ACTION_POINTER_INDEX_SHIFT;
         final int pointerId = MotionEventCompat.getPointerId(ev, pointerIndex);
         if (pointerId == mActivePointerId) {
-            // This was our active pointer going up. Choose a new
+            // This was our active pointer going up. Choose getDirection new
             // active pointer and adjust accordingly.
             // TODO: Make this decision more intelligent.
             final int newPointerIndex = pointerIndex == 0 ? 1 : 0;

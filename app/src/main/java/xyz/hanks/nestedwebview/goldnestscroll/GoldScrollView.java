@@ -1,75 +1,56 @@
-package xyz.hanks.nestedwebview.goldscroll;
+package xyz.hanks.nestedwebview.goldnestscroll;
 
 import android.content.Context;
 import android.support.v4.view.NestedScrollingChild;
 import android.support.v4.view.NestedScrollingParent;
 import android.support.v4.view.NestedScrollingParentHelper;
-import android.support.v4.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.ScrollView;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by hanks on 16/8/16.
- */
 public class GoldScrollView extends ScrollView
-        implements ScrollStateChangedListener, NestedScrollingParent {
-    private static final String TAG = "xxxxxx";
-    private final NestedScrollingParentHelper mParentHelper;
-    private int SENSOR_DISTANCE = 0;
-    private List<View> scrollingChildList;
-    private boolean firstInitSize = true;
+        implements NestedScrollingParent, ScrollStateChangedListener {
+    private static int SENSOR_DISTANCE = 0;
+    private static final String TAG = "EmbeddedScrollView";
+    private ScrollState childPosition = ScrollState.TOP;
     private int currentSwapLine = -1;
-    private int direction = 0; // 1.向下 2.向上
-    private float lastY;
-    private boolean hasNestedScroll;
+    private int direction = 0;
+    private boolean firstInitSize = true;
+    boolean hasNestedScroll = false;
     private boolean isTouchUp;
+    private float lastY;
+    private NestedScrollingParentHelper mParentHelper;
+    private List<View> scrollingChildList;
+    private int touchSlop;
 
-    public GoldScrollView(Context context) {
-        this(context, null);
+    public GoldScrollView(Context paramContext) {
+        this(paramContext, null);
     }
 
-    public GoldScrollView(Context context, AttributeSet attrs) {
-        this(context, attrs, 0);
+    public GoldScrollView(Context paramContext, AttributeSet paramAttributeSet) {
+        super(paramContext, paramAttributeSet);
+        init();
     }
 
-    public GoldScrollView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
-        setOverScrollMode(View.OVER_SCROLL_NEVER);
-        mParentHelper = new NestedScrollingParentHelper(this);
-        SENSOR_DISTANCE = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0F, getResources().getDisplayMetrics());
-    }
-
-
-    private void setNestedScrollViewHeight() {
-        for (View view : scrollingChildList) {
-            ViewGroup.LayoutParams layoutParams = view.getLayoutParams();
-            if (layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT
-                    || layoutParams.height == ViewGroup.LayoutParams.WRAP_CONTENT) {
-                layoutParams.height = getMeasuredHeight();
-                view.setLayoutParams(layoutParams);
-            }
-        }
-    }
-
-    private void analysisNestedScrollingChildViews() {
-        View view = getChildAt(0);
-        if ((view == null) || (!(view instanceof ViewGroup))) {
+    private void analyNestedScrollingChildViews() {
+        View localView1 = getChildAt(0);
+        if ((localView1 == null) || (!(localView1 instanceof ViewGroup)))
             throw new IllegalArgumentException("EmbeddedScrollView root child illegal");
-        }
-        scrollingChildList = new ArrayList<>();
-        ViewGroup localViewGroup = (ViewGroup) view;
+        this.scrollingChildList = new ArrayList();
+        ViewGroup localViewGroup = (ViewGroup) localView1;
         for (int i = 0; i < localViewGroup.getChildCount(); i++) {
-            View child = localViewGroup.getChildAt(i);
-            if ((child instanceof NestedScrollingChild))
-                scrollingChildList.add(child);
+            View localView2 = localViewGroup.getChildAt(i);
+            if ((localView2 instanceof NestedScrollingChild))
+                this.scrollingChildList.add(localView2);
         }
     }
 
@@ -77,24 +58,73 @@ public class GoldScrollView extends ScrollView
         scrollBy(dx, dy);
         consumed[0] = 0;
         consumed[1] = dy;
-        // Log.i(TAG, "parent consumed pre : " + consumed[1]);
+        Log.i(TAG, "parent consumed pre : " + consumed[1]);
+    }
+
+    private void init() {
+        setOverScrollMode(View.OVER_SCROLL_NEVER);
+        this.mParentHelper = new NestedScrollingParentHelper(this);
+        this.touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
+        SENSOR_DISTANCE = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0F, getResources().getDisplayMetrics());
+        Log.i(TAG, "touch slop = " + this.touchSlop + "  SENSOR_DISTANCE = " + SENSOR_DISTANCE);
     }
 
     private void setApproachLine(int mScrollY) {
-        for (View view : scrollingChildList) {
-            int viewTop = view.getTop();
-            if ((direction == 1 && mScrollY <= viewTop)
-                    || (direction ==2 && mScrollY >= viewTop) ) {
-                setCurrentSwapLine(viewTop);
-                return;
+        switch (this.direction) {
+            case 1: {
+                int temp = -1;
+                Iterator childIterator = this.scrollingChildList.iterator();
+                while (childIterator.hasNext()) {
+                    int viewTop = ((View) childIterator.next()).getTop();
+                    if (mScrollY <= viewTop) {
+                        int distance = viewTop - mScrollY;
+                        if ((temp == -1) || (distance < temp)) {
+                            temp = distance;
+                            setCurrentSwapLine(viewTop);
+                            return;
+                        }
+                    }
+                }
+                setCurrentSwapLine(-1);
             }
-            setCurrentSwapLine(-1);
+            break;
+            case 2: {
+                int i = -1;
+                Iterator childIterator = this.scrollingChildList.iterator();
+                while (childIterator.hasNext()) {
+                    int viewTop = ((View) childIterator.next()).getTop();
+                    if (mScrollY >= viewTop) {
+                        int k = mScrollY - viewTop;
+                        if ((i == -1) || (k < i)) {
+                            i = k;
+                            setCurrentSwapLine(viewTop);
+                            return;
+                        }
+                    }
+                }
+                setCurrentSwapLine(-1);
+            }
+            break;
         }
     }
 
     private void setCurrentSwapLine(int currentSwapLine) {
         this.currentSwapLine = currentSwapLine;
-        //Log.i(TAG, "currentSwapLine = " + currentSwapLine);
+        Log.i(TAG, "currentSwapLine = " + currentSwapLine);
+    }
+
+    private void setNestedScrollViewHeight() {
+        Iterator childIterator = this.scrollingChildList.iterator();
+        while (childIterator.hasNext()) {
+            View localView = (View) childIterator.next();
+            ViewGroup.LayoutParams localLayoutParams = localView.getLayoutParams();
+            if ((localLayoutParams.height == -1) || (localLayoutParams.height == -2)) {
+                int i = getMeasuredHeight();
+                localLayoutParams.height = i;
+                localView.setLayoutParams(localLayoutParams);
+                Log.i(TAG, "setNestedScrollViewHeight = " + i + "  view = " + localView);
+            }
+        }
     }
 
     private void setTouchState(MotionEvent ev) {
@@ -111,7 +141,7 @@ public class GoldScrollView extends ScrollView
                 float f = ev.getY();
                 int i = (int) (this.lastY - f);
                 if (i != 0) {
-                    this.direction = xyz.hanks.nestedwebview.jianshuScroll.DirectionDetector.a(i, true);
+                    this.direction = DirectionDetector.getDirection(i, true);
                 }
                 this.lastY = f;
                 break;
@@ -136,22 +166,31 @@ public class GoldScrollView extends ScrollView
 
     public void onChildDirectionChange(int direction) {
         this.direction = direction;
-        //Log.i(TAG, "onChildDirectionChange = " + direction);
+        Log.i(TAG, "onChildDirectionChange = " + direction);
     }
 
-    @Override
-    public void onChildPositionChange(ScrollState param) {
-
+    public void onChildPositionChange(ScrollState parama) {
+        this.childPosition = parama;
     }
 
     protected void onFinishInflate() {
         super.onFinishInflate();
-        analysisNestedScrollingChildViews();
+        analyNestedScrollingChildViews();
     }
+
+//  public boolean onInterceptTouchEvent(MotionEvent paramMotionEvent) {
+//    stopScrolling();
+//    boolean bool = super.onInterceptTouchEvent(paramMotionEvent);
+//    if (this.hasNestedScroll) {
+//      bool = false;
+//    }
+//    setTouchState(paramMotionEvent);
+//    return bool;
+//  }
 
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         super.onLayout(changed, l, t, r, b);
-        // Log.i(TAG, "onLayout : " + t + " / " + b);
+        Log.i(TAG, "onLayout : " + t + " / " + b);
         if (this.firstInitSize) {
             setNestedScrollViewHeight();
             setCurrentSwapLine(((View) this.scrollingChildList.get(0)).getTop());
@@ -241,7 +280,7 @@ public class GoldScrollView extends ScrollView
 
     protected void onScrollChanged(int mScrollX, int mScrollY, int oldX, int oldY) {
         super.onScrollChanged(mScrollX, mScrollY, oldX, oldY);
-        this.direction = xyz.hanks.nestedwebview.jianshuScroll.DirectionDetector.a(mScrollY - oldY, true);
+        this.direction = DirectionDetector.getDirection(mScrollY - oldY, true);
         Log.i(TAG, "onScrollChanged : top = " + mScrollY + " oldY = " + oldY + "  direction = " + this.direction);
         setApproachLine(mScrollY);
     }
@@ -252,7 +291,7 @@ public class GoldScrollView extends ScrollView
     }
 
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
-        return (nestedScrollAxes & ViewCompat.SCROLL_AXIS_VERTICAL) != 0;
+        return (nestedScrollAxes & SCROLL_AXIS_VERTICAL) != 0;
     }
 
     public void onStopNestedScroll(View target) {
@@ -266,3 +305,8 @@ public class GoldScrollView extends ScrollView
         return super.onTouchEvent(paramMotionEvent);
     }
 }
+
+/* Location:           /Users/likang/Desktop/classes_dex2jar.jar
+ * Qualified Name:     com.baiji.jianshu.widget.EmbeddedScrollView
+ * JD-Core Version:    0.6.2
+ */

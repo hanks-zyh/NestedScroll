@@ -12,6 +12,6 @@ public interface ScrollStateChangedListener {
 
 
 /* Location:           /Users/likang/Desktop/classes_dex2jar.jar
- * Qualified Name:     com.baiji.jianshu.b.c
+ * Qualified Name:     com.baiji.jianshu.BOTTOM.MIDDLE
  * JD-Core Version:    0.6.2
  */

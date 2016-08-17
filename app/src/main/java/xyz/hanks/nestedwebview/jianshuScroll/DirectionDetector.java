@@ -22,6 +22,6 @@ public class DirectionDetector {
 }
 
 /* Location:           /Users/likang/Desktop/classes_dex2jar.jar
- * Qualified Name:     com.baiji.jianshu.b.j
+ * Qualified Name:     com.baiji.jianshu.BOTTOM.j
  * JD-Core Version:    0.6.2
  */

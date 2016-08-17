@@ -19,13 +19,13 @@ import java.util.List;
 
 public class EmbeddedScrollView extends ScrollView
         implements NestedScrollingParent, ScrollStateChangedListener {
-    private static int SENSOR_DISTANCE = 0;
     private static final String TAG = "EmbeddedScrollView";
+    private static int SENSOR_DISTANCE = 0;
+    boolean hasNestedScroll = false;
     private ScrollState childPosition = ScrollState.a;
     private int currentSwapLine = -1;
     private int direction = 0;
     private boolean firstInitSize = true;
-    boolean hasNestedScroll = false;
     private boolean isTouchUp;
     private float lastY;
     private NestedScrollingParentHelper mParentHelper;
@@ -58,15 +58,15 @@ public class EmbeddedScrollView extends ScrollView
         scrollBy(dx, dy);
         consumed[0] = 0;
         consumed[1] = dy;
-        Log.i(TAG, "parent consumed pre : " + consumed[1]);
+        //Log.i(TAG, "parent consumed pre : " + consumed[1]);
     }
 
     private void init() {
         setOverScrollMode(View.OVER_SCROLL_NEVER);
         this.mParentHelper = new NestedScrollingParentHelper(this);
         this.touchSlop = ViewConfiguration.get(getContext()).getScaledTouchSlop();
-        SENSOR_DISTANCE = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100.0F, getResources().getDisplayMetrics());
-        Log.i(TAG, "touch slop = " + this.touchSlop + "  SENSOR_DISTANCE = " + SENSOR_DISTANCE);
+        SENSOR_DISTANCE = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200.0F, getResources().getDisplayMetrics());
+        // Log.i(TAG, "touch slop = " + this.touchSlop + "  SENSOR_DISTANCE = " + SENSOR_DISTANCE);
     }
 
     private void setApproachLine(int mScrollY) {
@@ -110,7 +110,7 @@ public class EmbeddedScrollView extends ScrollView
 
     private void setCurrentSwapLine(int currentSwapLine) {
         this.currentSwapLine = currentSwapLine;
-        Log.i(TAG, "currentSwapLine = " + currentSwapLine);
+        //Log.i(TAG, "currentSwapLine = " + currentSwapLine);
     }
 
     private void setNestedScrollViewHeight() {
@@ -211,7 +211,7 @@ public class EmbeddedScrollView extends ScrollView
         Log.i(TAG, "onNestedPreFling :  direction = " + this.direction + " currentSwapLine = " + this.currentSwapLine + " velocityY = " + velocityY + " scrollY = " + getScrollY());
         int scrollY = getScrollY();
         if (scrollY < this.currentSwapLine) {
-            Log.i(TAG, "fling 111111=="+velocityY);
+            Log.i(TAG, "fling 111111==" + velocityY);
             fling((int) velocityY);
             return true;
         }
@@ -233,14 +233,15 @@ public class EmbeddedScrollView extends ScrollView
                 dy = this.currentSwapLine - scrollY;
             }
             consumeEvent(dx, dy, consumed);
+        } else {
+            if (scrollY <= this.currentSwapLine)
+                return;
+            Log.i(TAG, "consumeEvent 222222");
+            if ((this.direction == 2) && (this.currentSwapLine != -1) && (scrollY + dy < this.currentSwapLine)) {
+                dy = this.currentSwapLine - scrollY;
+            }
+            consumeEvent(dx, dy, consumed);
         }
-        if(scrollY <= this.currentSwapLine)
-            return;
-        Log.i(TAG, "consumeEvent 222222");
-        if ((this.direction == 2) && (this.currentSwapLine != -1) && (scrollY + dy < this.currentSwapLine)) {
-            dy = this.currentSwapLine - scrollY;
-        }
-        consumeEvent(dx, dy, consumed);
     }
 
     public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
@@ -257,11 +258,10 @@ public class EmbeddedScrollView extends ScrollView
 
     @Override
     protected void onOverScrolled(int scrollX, int scrollY, boolean clampedX, boolean clampedY) {
-        Log.i(TAG, "onOverScrolled : " + scrollY + " " + clampedY + " isTouchUp = " + this.isTouchUp + "/" + this.hasNestedScroll + " currentSwapLine = " + this.currentSwapLine);
+        Log.i(TAG, "onOverScrolled : " + scrollY + ",direction:" + direction + "," + clampedY + " isTouchUp = " + this.isTouchUp + "/" + this.hasNestedScroll + " currentSwapLine = " + this.currentSwapLine);
         if (((this.isTouchUp) || (!this.hasNestedScroll)) && (this.currentSwapLine != -1)) {
             int i = scrollY - this.currentSwapLine;
-            Log.i(TAG,"IIIIIIIIIIII====="+i);
-            Log.i(TAG,"SENSOR_DISTANCE==="+SENSOR_DISTANCE);
+            Log.i(TAG, "IIIIIIIIIIII=====" + i + ",SENSOR_DISTANCE===" + SENSOR_DISTANCE);
             if (Math.abs(i) < SENSOR_DISTANCE) {
                 if ((this.direction == 1) && (i > 0)) {
                     Log.i(TAG, "1111scroll to currentSwapLine = " + this.currentSwapLine);
@@ -281,13 +281,13 @@ public class EmbeddedScrollView extends ScrollView
     protected void onScrollChanged(int mScrollX, int mScrollY, int oldX, int oldY) {
         super.onScrollChanged(mScrollX, mScrollY, oldX, oldY);
         this.direction = DirectionDetector.a(mScrollY - oldY, true);
-        Log.i(TAG, "onScrollChanged : top = " + mScrollY + " oldY = " + oldY + "  direction = " + this.direction);
+        //Log.i(TAG, "onScrollChanged : top = " + mScrollY + " oldY = " + oldY + "  direction = " + this.direction);
         setApproachLine(mScrollY);
     }
 
     protected void onSizeChanged(int paramInt1, int paramInt2, int paramInt3, int paramInt4) {
         super.onSizeChanged(paramInt1, paramInt2, paramInt3, paramInt4);
-        Log.i(TAG, "onSizeChanged : " + paramInt2 + "/" + paramInt4);
+        //Log.i(TAG, "onSizeChanged : " + paramInt2 + "/" + paramInt4);
     }
 
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
@@ -295,7 +295,7 @@ public class EmbeddedScrollView extends ScrollView
     }
 
     public void onStopNestedScroll(View target) {
-        Log.i(TAG, "onStopNestedScroll : " + target);
+        Log.i(TAG, "============== onStopNestedScroll : ============== " + target);
         this.hasNestedScroll = false;
         this.mParentHelper.onStopNestedScroll(target);
     }
