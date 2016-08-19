@@ -13,10 +13,18 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.TextView;
 
+import java.util.Random;
+
 public class MainActivity extends AppCompatActivity {
 
     private WebView webView;
     private RecyclerView recyclerView;
+    private String[] urls = new String[]{
+        "http://gold.xitu.io/post/57b074fda633bd0057035b6d",
+        "http://blog.csdn.net/hpu_zyh/article/details/52116512",
+        "http://gold.xitu.io/entry/57b57e5f8ac2470064443834/view",
+        "http://wj.qq.com/s/721023/c03b",
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,19 +32,7 @@ public class MainActivity extends AppCompatActivity {
 //        setContentView(R.layout.activity_main);
 //        setContentView(R.layout.activity_main_nest);
         setContentView(R.layout.activity_main_scroll);
-        // Let's display the progress in the activity title bar, like the
-        // browser app does.
         webView = (WebView) findViewById(R.id.webview);
-        webView.getSettings().setJavaScriptEnabled(true);
-
-
-        webView.setWebViewClient(new WebViewClient() {
-            @Override
-            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-                return true;
-            }
-        });
-
         webView.getSettings().setJavaScriptEnabled(true);
         webView.getSettings().setBuiltInZoomControls(true);
         webView.getSettings().setLoadWithOverviewMode(true);
@@ -47,6 +43,12 @@ public class MainActivity extends AppCompatActivity {
         webView.getSettings().setDatabaseEnabled(true);
         webView.getSettings().setDatabasePath("/data/data/com.daimajia.gold/databases/");
         webView.getSettings().setDomStorageEnabled(true);
+        webView.setWebViewClient(new WebViewClient(){
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return true;
+            }
+        });
         //网址添加 https 后，显示 http 图片,KITKAT 及以下版本默认为 MIXED_CONTENT_ALWAYS_ALLOW
         //see http://developer.android.com/intl/zh-cn/reference/android/webkit/WebSettings.html#setMixedContentMode(int)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -63,9 +65,9 @@ public class MainActivity extends AppCompatActivity {
 
         webView.setScrollContainer(false);
 
-        webView.loadUrl("http://gold.xitu.io/post/57b074fda633bd0057035b6d");
+//        webView.loadUrl("http://gold.xitu.io/post/57b074fda633bd0057035b6d");
 //        webView.loadUrl("http://blog.csdn.net/hpu_zyh/article/details/52116512");
-//        webView.loadUrl("http://www.jianshu.com/p/7cfb42b3749b");
+        webView.loadUrl(urls[new Random().nextInt(urls.length)]);
 
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
