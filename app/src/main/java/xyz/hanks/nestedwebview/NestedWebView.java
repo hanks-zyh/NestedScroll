@@ -57,13 +57,13 @@ public class NestedWebView extends WebView implements NestedScrollingChild {
             case MotionEvent.ACTION_DOWN:
                 mLastY = y;
                 mNestedOffsetY = 0;
+
+                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 break;
             case MotionEvent.ACTION_MOVE:
 
                 int dy = mLastY - y;
                 int oldY = getScrollY();
-
-                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 if (dispatchNestedPreScroll(0, 0, mScrollConsumed, mScrollOffset)) {
                     dy -= mScrollConsumed[1];
                     event.offsetLocation(0, -mScrollOffset[1]);
