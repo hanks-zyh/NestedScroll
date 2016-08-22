@@ -90,7 +90,7 @@ public class NScrollView extends ScrollView implements NestedScrollingParent {
         int scrollY = getScrollY();
         boolean targetScrollDown = ScrollUtils.canChildScrollDown(target);
         boolean targetScrollUp = ScrollUtils.canChildScrollUp(target);
-        log("onNestedPreScroll: target = [" + target + "], dx = [" + dx + "], dy = [" + dy + "], consumed = [" + consumed + "]");
+        log("onNestedPreScroll: target = [" + target.getClass().getName() + "], dx = [" + dx + "], dy = [" + dy + "], consumed = [" + consumed + "]");
         log("scrollY:" + scrollY + ",lien:" + (childrenHeight[0] + childrenHeight[1]) + ",scrollDown:" + targetScrollDown + "scrollUp:" + targetScrollUp);
 
         if (dy > 0) {
@@ -119,12 +119,12 @@ public class NScrollView extends ScrollView implements NestedScrollingParent {
     @Override
     public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
         scrollBy(dxUnconsumed, dyUnconsumed);
-        log("onNestedScroll: target = [" + target + "], dxConsumed = [" + dxConsumed + "], dyConsumed = [" + dyConsumed + "], dxUnconsumed = [" + dxUnconsumed + "], dyUnconsumed = [" + dyUnconsumed + "]");
+        log("onNestedScroll: target = [" + target.getClass().getName() + "], dxConsumed = [" + dxConsumed + "], dyConsumed = [" + dyConsumed + "], dxUnconsumed = [" + dxUnconsumed + "], dyUnconsumed = [" + dyUnconsumed + "]");
     }
 
     @Override
     public boolean onNestedPreFling(View target, float velocityX, float velocityY) {
-        log("onNestedPreFling: target = [" + target + "], velocityX = [" + velocityX + "], velocityY = [" + velocityY + "]");
+        log("onNestedPreFling: target = [" + target.getClass().getName() + "], velocityX = [" + velocityX + "], velocityY = [" + velocityY + "]");
         int scrollY = getScrollY();
         if (scrollY < childrenHeight[0] + childrenHeight[1]) {
             fling((int) velocityY);
@@ -135,7 +135,7 @@ public class NScrollView extends ScrollView implements NestedScrollingParent {
 
     @Override
     public boolean onNestedFling(View target, float velocityX, float velocityY, boolean consumed) {
-        log("onNestedFling: target = [" + target + "], velocityX = [" + velocityX + "], velocityY = [" + velocityY + "], consumed = [" + consumed + "]");
+        log("onNestedFling: target = [" + target.getClass().getName() + "], velocityX = [" + velocityX + "], velocityY = [" + velocityY + "], consumed = [" + consumed + "]");
         return super.onNestedFling(target, velocityX, velocityY, consumed);
     }
 
