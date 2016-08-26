@@ -78,6 +78,7 @@ public class NWebView extends WebView implements NestedScrollingChild {
         super.onScrollChanged(x, y, oldx, oldy);
         this.consumedY = (y - oldy);
     }
+
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         final int action = MotionEventCompat.getActionMasked(event);
@@ -88,9 +89,9 @@ public class NWebView extends WebView implements NestedScrollingChild {
         event.offsetLocation(0, mNestedOffsetY);
         switch (action) {
             case MotionEvent.ACTION_DOWN:
-                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 mLastMotionY = y;
                 mNestedOffsetY = 0;
+                startNestedScroll(ViewCompat.SCROLL_AXIS_VERTICAL);
                 break;
             case MotionEvent.ACTION_MOVE:
                 int dy = mLastMotionY - y;
@@ -98,23 +99,29 @@ public class NWebView extends WebView implements NestedScrollingChild {
 
                 if (dispatchNestedPreScroll(0, dy, mScrollConsumed, mScrollOffset)) {
                     dy -= mScrollConsumed[1];
-                    event.offsetLocation(0, -mScrollOffset[1]);
+                    event.offsetLocation(0, mScrollOffset[1]);
                     mNestedOffsetY += mScrollOffset[1];
                 }
                 mLastMotionY = y + mScrollOffset[1];
 
-                final int unconsumedY = dy - consumedY;
 
-                log("dy:"+unconsumedY);
-//                if (dy < 0) {
-//                    int newScrollY = Math.max(0, oldY + dy);
-//                    dy -= newScrollY - oldY;
-//                    if (dispatchNestedScroll(0, newScrollY - dy, 0, dy, mScrollOffset)) {
-//                        event.offsetLocation(0, mScrollOffset[1]);
-//                        mNestedOffsetY += mScrollOffset[1];
-//                        mLastMotionY -= mScrollOffset[1];
-//                    }
-//                }
+                final int scrolledDeltaY = getScrollY() - oldY;
+                final int unconsumedY = dy - scrolledDeltaY;
+                if (dispatchNestedScroll(0, scrolledDeltaY, 0, unconsumedY, mScrollOffset)) {
+                    mLastMotionY -= mScrollOffset[1];
+                    event.offsetLocation(0, mScrollOffset[1]);
+                    mNestedYOffset += mScrollOffset[1];
+                }
+                log("dy:" + unconsumedY);
+                if (dy < 0) {
+                    int newScrollY = Math.max(0, oldY + dy);
+                    dy -= newScrollY - oldY;
+                    if (dispatchNestedScroll(0, newScrollY - dy, 0, dy, mScrollOffset)) {
+                        event.offsetLocation(0, mScrollOffset[1]);
+                        mNestedOffsetY += mScrollOffset[1];
+                        mLastMotionY -= mScrollOffset[1];
+                    }
+                }
                 break;
             case MotionEvent.ACTION_CANCEL:
             case MotionEvent.ACTION_UP:
