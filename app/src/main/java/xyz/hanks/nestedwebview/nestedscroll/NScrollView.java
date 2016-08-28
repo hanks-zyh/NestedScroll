@@ -43,8 +43,13 @@ public class NScrollView extends ScrollView implements NestedScrollingParent {
         this.mParentHelper = new NestedScrollingParentHelper(this);
     }
 
+    boolean firstLayout = true;
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
+        if(!firstLayout){
+            firstLayout  = false;
+            return;
+        }
         View view = getChildAt(0);
         if (view == null || !(view instanceof ViewGroup)) {
             throw new IllegalArgumentException("must have one child ViewGroup");
@@ -53,12 +58,15 @@ public class NScrollView extends ScrollView implements NestedScrollingParent {
         nestedScrollingChildList.clear();
         for (int i = 0; i < viewGroup.getChildCount(); i++) {
             View child = viewGroup.getChildAt(i);
+            childrenHeight[i] = child.getMeasuredHeight();
             if (child instanceof NestedScrollingChild) {
-                nestedScrollingChildList.add(child);
-                int measuredHeight = child.getMeasuredHeight();
                 ViewGroup.LayoutParams layoutParams = child.getLayoutParams();
-                layoutParams.height = measuredHeight;
-                child.setLayoutParams(layoutParams);
+                if ((layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT) || (layoutParams.height == ViewGroup.LayoutParams.WRAP_CONTENT)) {
+                    layoutParams.height = getMeasuredHeight();
+                    child.setLayoutParams(layoutParams);
+                    Log.i(TAG, "setNestedScrollViewHeight = " + getMeasuredHeight() + "  view = " + child);
+                }
+                nestedScrollingChildList.add(child);
             }
         }
     }

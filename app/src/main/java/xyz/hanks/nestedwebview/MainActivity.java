@@ -23,7 +23,7 @@ public class MainActivity extends AppCompatActivity {
 //        "http://gold.xitu.io/post/57b074fda633bd0057035b6d",
         "http://blog.csdn.net/hpu_zyh/article/details/52116512",
 //        "http://gold.xitu.io/entry/57b57e5f8ac2470064443834/view",
-        "http://wj.qq.com/s/721023/c03b",
+//        "http://wj.qq.com/s/721023/c03b",
     };
 
     @Override
