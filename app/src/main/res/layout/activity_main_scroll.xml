@@ -9,34 +9,40 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <xyz.hanks.nestedwebview.nestedscroll.NWebView
-            android:id="@+id/webview"
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/recyclerView0"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="#20f0"
             android:scrollbarSize="3dp"
             android:scrollbars="vertical"/>
 
-        <LinearLayout
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="#e1e1e1"
-            android:orientation="vertical">
+            android:layout_height="wrap_content">
 
-            <TextView
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="cdsadadlick"/>
+                android:layout_height="wrap_content"
+                android:background="#e1e1e1"
+                android:orientation="vertical">
 
-            <Button
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="asddasda"/>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:text="cdsadadlick"/>
 
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="100dp"
-                android:text="asdadarewe"/>
-        </LinearLayout>
+                <Button
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:text="asddasda"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="100dp"
+                    android:text="asdadarewe"/>
+            </LinearLayout>
+        </android.support.v4.widget.NestedScrollView>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/recyclerView"

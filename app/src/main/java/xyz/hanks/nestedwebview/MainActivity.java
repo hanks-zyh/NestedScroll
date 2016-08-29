@@ -1,11 +1,19 @@
 package xyz.hanks.nestedwebview;
 
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebResourceRequest;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.TextView;
+
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,53 +31,63 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.activity_main);
 //        setContentView(R.layout.activity_main_nest);
-//        setContentView(R.layout.activity_main_scroll);
-        setContentView(R.layout.activity_scroller);
-//        webView = (WebView) findViewById(R.id.webview);
-//        webView.getSettings().setJavaScriptEnabled(true);
-//        webView.getSettings().setBuiltInZoomControls(true);
-//        webView.getSettings().setLoadWithOverviewMode(true);
-//        webView.getSettings().setDisplayZoomControls(false);
-//        webView.getSettings().setUseWideViewPort(true);
-//        webView.getSettings().setAppCacheEnabled(true);
-//        webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
-//        webView.getSettings().setDatabaseEnabled(true);
-//        webView.getSettings().setDatabasePath("/data/data/com.daimajia.gold/databases/");
-//        webView.getSettings().setDomStorageEnabled(true);
-//        webView.setWebViewClient(new WebViewClient() {
-//            @Override
-//            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
-//                return true;
-//            }
-//        });
-//        //网址添加 https 后，显示 http 图片,KITKAT 及以下版本默认为 MIXED_CONTENT_ALWAYS_ALLOW
-//        //see http://developer.android.com/intl/zh-cn/reference/android/webkit/WebSettings.html#setMixedContentMode(int)
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-//            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
-//        }
-//
-//        if (Build.VERSION.SDK_INT >= 19) {
-//            // chromium, enable hardware acceleration
-//            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-//        } else {
-//            // older android version, disable hardware acceleration
-//            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-//        }
-//
-//        webView.setScrollContainer(false);
-//
-////        webView.loadUrl("http://gold.xitu.io/post/57b074fda633bd0057035b6d");
-////        webView.loadUrl("http://blog.csdn.net/hpu_zyh/article/details/52116512");
-//        webView.loadUrl(urls[new Random().nextInt(urls.length)]);
-//
-//
-//        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
-//        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-////        recyclerView.setNestedScrollingEnabled(false);
-//
-//        recyclerView.setAdapter(new MyAdapter());
+        setContentView(R.layout.activity_main_scroll);
+//        setContentView(R.layout.activity_scroller);
+//        initWebView();
+
+        initRecyclerView();
 
 
+    }
+
+    private void initRecyclerView() {
+        recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(new MyAdapter());
+
+        RecyclerView recyclerView0 = (RecyclerView) findViewById(R.id.recyclerView0);
+        recyclerView0.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView0.setAdapter(new MyAdapter());
+
+    }
+
+    private void initWebView() {
+        webView = (WebView) findViewById(R.id.webview);
+        webView.getSettings().setJavaScriptEnabled(true);
+        webView.getSettings().setBuiltInZoomControls(true);
+        webView.getSettings().setLoadWithOverviewMode(true);
+        webView.getSettings().setDisplayZoomControls(false);
+        webView.getSettings().setUseWideViewPort(true);
+        webView.getSettings().setAppCacheEnabled(true);
+        webView.getSettings().setRenderPriority(WebSettings.RenderPriority.HIGH);
+        webView.getSettings().setDatabaseEnabled(true);
+        webView.getSettings().setDatabasePath("/data/data/com.daimajia.gold/databases/");
+        webView.getSettings().setDomStorageEnabled(true);
+        webView.setWebViewClient(new WebViewClient() {
+            @Override
+            public boolean shouldOverrideUrlLoading(WebView view, WebResourceRequest request) {
+                return true;
+            }
+        });
+        //网址添加 https 后，显示 http 图片,KITKAT 及以下版本默认为 MIXED_CONTENT_ALWAYS_ALLOW
+        //see http://developer.android.com/intl/zh-cn/reference/android/webkit/WebSettings.html#setMixedContentMode(int)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
+        }
+
+        if (Build.VERSION.SDK_INT >= 19) {
+            // chromium, enable hardware acceleration
+            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        } else {
+            // older android version, disable hardware acceleration
+            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+        }
+
+        webView.setScrollContainer(false);
+
+//        webView.loadUrl("http://gold.xitu.io/post/57b074fda633bd0057035b6d");
+//        webView.loadUrl("http://blog.csdn.net/hpu_zyh/article/details/52116512");
+        webView.loadUrl(urls[new Random().nextInt(urls.length)]);
     }
 
 
