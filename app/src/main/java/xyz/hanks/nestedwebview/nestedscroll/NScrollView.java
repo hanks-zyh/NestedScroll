@@ -21,13 +21,11 @@ import xyz.hanks.nestedwebview.ScrollUtils;
 public class NScrollView extends ViewGroup implements NestedScrollingParent {
 
     private static final String TAG = "NScrollView";
-    int totalHeight = 0;
+    private int maxDistance = 0;
+    private int totalHeight = 0;
     private NestedScrollingParentHelper mParentHelper;
-    private int[] childrenHeight = new int[3];
     private List<View> nestedScrollingChildList = new ArrayList<>();
-    private int direction = 0;
     private ScrollerCompat scroller;
-
 
     public NScrollView(Context context) {
         this(context, null);
@@ -47,30 +45,20 @@ public class NScrollView extends ViewGroup implements NestedScrollingParent {
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        View view = getChildAt(0);
-        if (view == null || !(view instanceof ViewGroup)) {
-            throw new IllegalArgumentException("must have one child ViewGroup");
-        }
-        measureChild(view, widthMeasureSpec, heightMeasureSpec);
-        ViewGroup viewGroup = (ViewGroup) view;
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
             measureChild(child, widthMeasureSpec, heightMeasureSpec);
         }
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        View view = getChildAt(0);
-        if (view == null || !(view instanceof ViewGroup)) {
-            throw new IllegalArgumentException("must have one child ViewGroup");
-        }
-        ViewGroup viewGroup = (ViewGroup) view;
+
         int parentHeight = getMeasuredHeight();
         int top = t;
         int lastChildHeight = 0;
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
+        for (int i = 0; i < getChildCount(); i++) {
+            View child =  getChildAt(i);
             LayoutParams layoutParams = child.getLayoutParams();
             if (layoutParams.height == LayoutParams.MATCH_PARENT) {
                 layoutParams.height = parentHeight;
@@ -84,21 +72,18 @@ public class NScrollView extends ViewGroup implements NestedScrollingParent {
             top += layoutParams.height;
             lastChildHeight = layoutParams.height;
         }
-        totalHeight = top - lastChildHeight;
-        viewGroup.layout(l, t, r, top);
+        maxDistance = top - lastChildHeight;
+        totalHeight = top;
+        //viewGroup.layout(l, t, r, top);
     }
 
     @Override
     protected void onFinishInflate() {
         super.onFinishInflate();
-        View view = getChildAt(0);
-        if (view == null || !(view instanceof ViewGroup)) {
-            throw new IllegalArgumentException("must have one child ViewGroup");
-        }
+
         nestedScrollingChildList.clear();
-        ViewGroup viewGroup = (ViewGroup) view;
-        for (int i = 0; i < viewGroup.getChildCount(); i++) {
-            View child = viewGroup.getChildAt(i);
+        for (int i = 0; i < getChildCount(); i++) {
+            View child =  getChildAt(i);
             nestedScrollingChildList.add(child);
         }
     }
@@ -140,14 +125,14 @@ public class NScrollView extends ViewGroup implements NestedScrollingParent {
         boolean targetScrollDown = ScrollUtils.canChildScrollDown(target);
         boolean targetScrollUp = ScrollUtils.canChildScrollUp(target);
         log("onNestedPreScroll: target = [" + target.getClass().getName() + "], dx = [" + dx + "], dy = [" + dy + "], consumed = [" + consumed + "]");
-        log("scrollY:" + scrollY + ",lien:" + line + ",scrollDown:" + targetScrollDown + "scrollUp:" + targetScrollUp + ",totalHeight" + totalHeight);
+        log("scrollY:" + scrollY + ",lien:" + line + ",scrollDown:" + targetScrollDown + "scrollUp:" + targetScrollUp + ",maxDistance" + maxDistance);
 
         if (scrollY == line
                 && ((dy > 0 && targetScrollDown) || (dy < 0 && targetScrollUp))) {
             return;
         }
 
-        if (scrollY + dy < 0 || scrollY + dy > totalHeight) {
+        if (scrollY + dy < 0 || scrollY + dy > maxDistance) {
             return;
         }
         consumeEvent(0, dy, consumed);
@@ -156,7 +141,7 @@ public class NScrollView extends ViewGroup implements NestedScrollingParent {
     @Override
     public void onNestedScroll(View target, int dxConsumed, int dyConsumed, int dxUnconsumed, int dyUnconsumed) {
         int scrollY = getScrollY();
-        if (scrollY + dyUnconsumed < 0 || scrollY + dyUnconsumed > totalHeight) {
+        if (scrollY + dyUnconsumed < 0 || scrollY + dyUnconsumed > maxDistance) {
             return;
         }
         scrollBy(dxUnconsumed, dyUnconsumed);
@@ -168,7 +153,7 @@ public class NScrollView extends ViewGroup implements NestedScrollingParent {
         int scrollY = getScrollY();
         log("onNestedPreFling: target = [" + target.getClass().getName() + "], velocityX = [" + velocityX + "], velocityY = [" + velocityY + "]" + ",scrollY:" + scrollY);
         int line = getCurrentWrapline(target);
-        if(scrollY != line) {
+        if (scrollY != line) {
             fling((int) velocityY, scrollY);
             return true;
         }
@@ -178,7 +163,7 @@ public class NScrollView extends ViewGroup implements NestedScrollingParent {
     private void fling(int velocityY, int scrollY) {
         if (getChildCount() > 0) {
             int height = getHeight() - getPaddingTop() - getPaddingBottom();
-            int bottom = getChildAt(0).getHeight();
+            int bottom = totalHeight;
             scroller.fling(0, scrollY, 0, velocityY, 0, 0, 0,
                     Math.max(0, bottom - height));
             invalidate();
