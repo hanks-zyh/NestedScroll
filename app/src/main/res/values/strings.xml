@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">NestedWebview</string>
+    <string name="title_activity_recycler_view">RecyclerViewActivity</string>
 </resources>

@@ -5,7 +5,6 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebResourceRequest;
 import android.webkit.WebSettings;
@@ -20,10 +19,10 @@ public class MainActivity extends AppCompatActivity {
     private WebView webView;
     private RecyclerView recyclerView;
     private String[] urls = new String[]{
-//        "http://gold.xitu.io/post/57b074fda633bd0057035b6d",
+            "http://gold.xitu.io/post/57b074fda633bd0057035b6d",
             "http://blog.csdn.net/hpu_zyh/article/details/52116512",
-//        "http://gold.xitu.io/entry/57b57e5f8ac2470064443834/view",
-//        "http://wj.qq.com/s/721023/c03b",
+            "http://gold.xitu.io/entry/57b57e5f8ac2470064443834/view",
+            "http://wj.qq.com/s/721023/c03b",
     };
 
     @Override
@@ -33,9 +32,11 @@ public class MainActivity extends AppCompatActivity {
 //        setContentView(R.layout.activity_main_nest);
         setContentView(R.layout.activity_main_scroll);
 //        setContentView(R.layout.activity_scroller);
-//        initWebView();
+        initWebView();
 
         initRecyclerView();
+
+//        startActivity(new Intent(this,RecyclerViewActivity.class));
 
 
     }
@@ -45,9 +46,9 @@ public class MainActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(new MyAdapter());
 
-        RecyclerView recyclerView0 = (RecyclerView) findViewById(R.id.recyclerView0);
-        recyclerView0.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView0.setAdapter(new MyAdapter());
+//        RecyclerView recyclerView0 = (RecyclerView) findViewById(R.id.recyclerView0);
+//        recyclerView0.setLayoutManager(new LinearLayoutManager(this));
+//        recyclerView0.setAdapter(new MyAdapter());
 
     }
 
@@ -75,13 +76,13 @@ public class MainActivity extends AppCompatActivity {
             webView.getSettings().setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
 
-        if (Build.VERSION.SDK_INT >= 19) {
-            // chromium, enable hardware acceleration
-            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        } else {
-            // older android version, disable hardware acceleration
-            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
+//        if (Build.VERSION.SDK_INT >= 19) {
+//            // chromium, enable hardware acceleration
+//            webView.setLayerType(View.LAYER_TYPE_HARDWARE, null);
+//        } else {
+//            // older android version, disable hardware acceleration
+//            webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+//        }
 
         webView.setScrollContainer(false);
 
