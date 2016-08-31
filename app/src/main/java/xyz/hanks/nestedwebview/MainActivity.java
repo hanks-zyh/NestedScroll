@@ -19,10 +19,10 @@ public class MainActivity extends AppCompatActivity {
     private WebView webView;
     private RecyclerView recyclerView;
     private String[] urls = new String[]{
-            "http://gold.xitu.io/post/57b074fda633bd0057035b6d",
+//            "http://gold.xitu.io/post/57c2ff4da633bd005d7666e9",
             "http://blog.csdn.net/hpu_zyh/article/details/52116512",
-            "http://gold.xitu.io/entry/57b57e5f8ac2470064443834/view",
-            "http://wj.qq.com/s/721023/c03b",
+//            "http://gold.xitu.io/entry/57b57e5f8ac2470064443834/view",
+//            "http://wj.qq.com/s/721023/c03b",
     };
 
     @Override

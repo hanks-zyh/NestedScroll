@@ -6,6 +6,7 @@ import android.support.v4.view.NestedScrollingParentHelper;
 import android.support.v4.widget.ScrollerCompat;
 import android.util.AttributeSet;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -21,6 +22,7 @@ import xyz.hanks.nestedwebview.ScrollUtils;
 public class NScrollView extends ViewGroup implements NestedScrollingParent {
 
     private static final String TAG = "NScrollView";
+    private ScrollListener scrollListener;
     private int maxDistance = 0;
     private int totalHeight = 0;
     private NestedScrollingParentHelper mParentHelper;
@@ -44,33 +46,37 @@ public class NScrollView extends ViewGroup implements NestedScrollingParent {
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+//        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+        int width = MeasureSpec.getSize(widthMeasureSpec);
+        int height = MeasureSpec.getSize(heightMeasureSpec);
+        int measureHeight = 0;
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
-            measureChild(child, widthMeasureSpec, heightMeasureSpec);
+            LayoutParams layoutParams = child.getLayoutParams();
+            if (layoutParams.height == LayoutParams.WRAP_CONTENT) {
+                measureChild(child, widthMeasureSpec, MeasureSpec.makeMeasureSpec(height, MeasureSpec.UNSPECIFIED));
+            } else if (layoutParams.height == LayoutParams.MATCH_PARENT) {
+                measureChild(child, widthMeasureSpec, MeasureSpec.makeMeasureSpec(height, MeasureSpec.EXACTLY));
+            } else {
+                measureChild(child, widthMeasureSpec, height);
+            }
+
+            int childMeasuredHeight = child.getMeasuredHeight();
+            measureHeight += childMeasuredHeight;
         }
+        setMeasuredDimension(width, height);
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-
-        int parentHeight = getMeasuredHeight();
         int top = t;
         int lastChildHeight = 0;
         for (int i = 0; i < getChildCount(); i++) {
-            View child =  getChildAt(i);
-            LayoutParams layoutParams = child.getLayoutParams();
-            if (layoutParams.height == LayoutParams.MATCH_PARENT) {
-                layoutParams.height = parentHeight;
-            } else {
-                int childMeasuredHeight = child.getMeasuredHeight();
-                layoutParams.height = childMeasuredHeight;
-            }
-            log(child + "," + layoutParams.height);
-            child.setLayoutParams(layoutParams);
-            child.layout(l, top, r, top + layoutParams.height);
-            top += layoutParams.height;
-            lastChildHeight = layoutParams.height;
+            View child = getChildAt(i);
+            int childMeasuredHeight = child.getMeasuredHeight();
+            child.layout(l, top, r,  top + childMeasuredHeight);
+            top += childMeasuredHeight;
+            lastChildHeight = childMeasuredHeight;
         }
         maxDistance = top - lastChildHeight;
         totalHeight = top;
@@ -83,7 +89,10 @@ public class NScrollView extends ViewGroup implements NestedScrollingParent {
 
         nestedScrollingChildList.clear();
         for (int i = 0; i < getChildCount(); i++) {
-            View child =  getChildAt(i);
+            View child = getChildAt(i);
+            if (child instanceof ScrollListener) {
+                scrollListener = (ScrollListener) child;
+            }
             nestedScrollingChildList.add(child);
         }
     }
@@ -107,19 +116,40 @@ public class NScrollView extends ViewGroup implements NestedScrollingParent {
     }
 
     @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                if (!scroller.isFinished()) {
+                    scroller.abortAnimation();
+                }
+                break;
+        }
+        return super.onTouchEvent(event);
+    }
+
+    @Override
+    protected void onScrollChanged(int l, int t, int oldl, int oldt) {
+        super.onScrollChanged(l, t, oldl, oldt);
+        if (scrollListener != null) {
+            scrollListener.onScroll(l, t, oldl, oldt);
+        }
+    }
+
+    @Override
     public boolean onStartNestedScroll(View child, View target, int nestedScrollAxes) {
         return (nestedScrollAxes & SCROLL_AXIS_VERTICAL) != 0;
     }
 
     @Override
     public void onNestedScrollAccepted(View child, View target, int axes) {
+        logi("======== onStartNestedScroll =======");
+
         mParentHelper.onNestedScrollAccepted(child, target, axes);
         return;
     }
 
     @Override
     public void onNestedPreScroll(View target, int dx, int dy, int[] consumed) {
-        logi("======== onStartNestedScroll =======");
         int scrollY = getScrollY();
         int line = getCurrentWrapline(target);
         boolean targetScrollDown = ScrollUtils.canChildScrollDown(target);
